@@ -8,6 +8,8 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals
 )
 
+import re
+
 from .blkcntnr import BlockItemContainer
 from .enum.section import WD_SECTION
 from .enum.text import WD_BREAK
@@ -186,6 +188,33 @@ class Document(ElementProxy):
         if self.__body is None:
             self.__body = _Body(self._element.body, self)
         return self.__body
+
+    def table_replace(self, search, replace):
+        searchre = re.compile(search)
+        for table in self.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            run_text = run.text
+                            if run_text and searchre.search(run_text):
+                                run.text = re.sub(search, replace, run_text)
+        return table
+
+    def paragraph_replace(self, search, replace):
+        searchre = re.compile(search)
+        for paragraph in self.paragraphs:
+            for run in paragraph.runs:
+                run_text = run.text
+                if run_text and searchre.search(run_text):
+                    run.text = re.sub(search, replace, run_text)
+        return paragraph
+
+    def clear_paragraph(self, paragraph):
+        p_element = paragraph._p
+        p_child_elements = [elm for elm in p_element.iterchildren()]
+        for child_element in p_child_elements:
+            p_element.remove(child_element)
 
 
 class _Body(BlockItemContainer):
