@@ -195,19 +195,17 @@ class Document(ElementProxy):
             for row in table.rows:
                 for cell in row.cells:
                     for paragraph in cell.paragraphs:
-                        for run in paragraph.runs:
-                            run_text = run.text
-                            if run_text and searchre.search(run_text):
-                                run.text = re.sub(search, replace, run_text)
+                        paragraph_text = paragraph.text
+                        if paragraph_text and searchre.search(paragraph_text):
+                            paragraph.text = re.sub(search, replace, paragraph_text)
         return table
 
     def paragraph_replace(self, search, replace):
         searchre = re.compile(search)
         for paragraph in self.paragraphs:
-            for run in paragraph.runs:
-                run_text = run.text
-                if run_text and searchre.search(run_text):
-                    run.text = re.sub(search, replace, run_text)
+            paragraph_text = paragraph.text
+            if paragraph_text and searchre.search(paragraph_text):
+                paragraph.text = re.sub(search, replace, paragraph_text)
         return paragraph
 
     def clear_paragraph(self, paragraph):
